@@ -1,0 +1,59 @@
+shot	start	end	content	latent_noise
+1	0.00	11.00	opening/planet+ship (fade-in, dissolve@11)	0.15
+2	11.00	22.59	ship over planet	0.15
+3	22.59	24.42	space/ships	0.15
+4	24.42	24.89	space/ships	0.15
+5	24.89	31.40	space/ships	0.15
+6	31.40	38.34	space/cockpit	0.15
+7	38.34	42.98	space/ships	0.15
+8	42.98	43.51	space/ships	0.15
+9	43.51	46.58	space/ships	0.15
+10	46.58	49.72	space/ships	0.15
+11	49.72	51.15	space/ships	0.15
+12	51.15	52.72	space/ships	0.15
+13	52.72	53.72	space/ships	0.15
+14	53.72	57.96	ship close-up	0.20
+15	57.96	63.63	ship close-up (TESTED)	0.20
+16	63.63	66.20	space/ships	0.15
+17	66.20	70.64	space/ships	0.15
+18	70.64	71.24	space/ships	0.15
+19	71.24	73.21	space/ships	0.15
+20	73.21	75.84	space/ships	0.15
+21	75.84	77.28	space/ships	0.15
+22	77.28	81.35	space/ships	0.15
+23	81.35	84.02	space/ships	0.15
+24	84.02	93.96	space/ships	0.15
+25	93.96	94.99	space/explosion	0.15
+26	94.99	96.80	space/ships	0.15
+27	96.80	99.57	space/ships	0.15
+28	99.57	101.67	space/HUD	0.13
+29	101.67	105.27	space/ships	0.15
+30	105.27	109.64	landscape/desert	0.10
+31	109.64	115.45	landscape/desert	0.10
+32	115.45	123.79	landscape/desert	0.10
+33	123.79	126.09	landscape/desert	0.10
+34	126.09	132.50	landscape/ships-over-desert	0.10
+35	132.50	135.17	landscape	0.10
+36	135.17	139.87	landscape	0.10
+37	139.87	144.68	man (medium, face)	0.06
+38	144.68	147.55	face close-up	0.05
+39	147.55	150.18	interior/light	0.10
+40	150.18	156.19	man (medium, face)	0.06
+41	156.19	158.36	man (medium, face)	0.06
+42	158.36	161.53	interior/light	0.10
+43	161.53	172.74	face close-up	0.05
+44	172.74	175.01	interior	0.10
+45	175.01	177.41	green alien (full)	0.10
+46	177.41	181.41	green alien (closer)	0.10
+47	181.41	184.95	interior	0.10
+48	184.95	186.02	face close-up	0.05
+49	186.02	188.15	interior/hologram	0.10
+50	188.15	188.79	interior/hologram	0.10
+51	188.79	193.19	face close-up	0.05
+52	193.19	198.40	interior	0.10
+53	198.40	199.83	interior	0.10
+54	199.83	203.04	face close-up	0.05
+55	203.04	207.31	interior/hologram	0.10
+56	207.31	210.84	face close-up	0.05
+57	210.84	218.18	interior	0.10
+58	218.18	222.12	interior/end	0.10

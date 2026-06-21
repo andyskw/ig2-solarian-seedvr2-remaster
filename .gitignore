@@ -1,0 +1,27 @@
+# media — never commit source/output video (copyright + size)
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.png
+*.jpg
+*.webp
+!shot_contactsheet.png   # allow committing a verification sheet if you want, otherwise remove this line
+
+# work dirs
+out/
+shots/
+shots_sr/
+frames/
+ComfyUI-SeedVR2_VideoUpscaler/
+models/
+*.tgz
+
+# python / env
+.venv/
+__pycache__/
+*.pyc
+
+# logs / scratch
+*.log
+concat*.txt
