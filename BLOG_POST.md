@@ -79,27 +79,32 @@ getting the cut list was the real fight:
 - The opening "cut" was a **1-second cross-dissolve** — invisible to content detectors; only my eye
   caught it.
 
-The workflow that worked: auto-detect → render a **contact sheet** (one thumbnail per shot) → verify and
-hand-edit. Automatic scene detection is a draft, not an oracle.
+The workflow that worked: auto-detect → render a **contact sheet** (one thumbnail per shot) → verify and hand-edit. Treat automatic scene detection as a "draft".
 
 ![Shot contact sheet for verification](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/shot_contactsheet.png)
 
-The bulk of the hand-editing was *merging* false cuts. The rule I settled on: it's the same shot if the
-camera/subject continues across the "cut" (an explosion flash, fast motion, a fighter crossing frame);
+The bulk of the hand-editing was *merging* false cuts. The rule I settled on: it's the same shot if the camera/subject continues across the "cut" (an explosion flash, fast motion, a fighter crossing frame);
 it's only a new shot on a real change of framing — or a dissolve, which detectors miss entirely.
 
 ![Which shots I merged by hand, and why](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/manual_merge_explainer.png)
 
-One more trap: **split frame-exactly.** Time-based `-ss/-to` added ~1 frame per cut, which drifted ~2
-seconds over the video and broke lip-sync. `trim=start_frame:end_frame` gives the exact source frame
-count.
+One more trap: **split frame-exactly**. Time-based `-ss/-to` added ~1 frame per cut, which drifted ~2 seconds over the video and broke lip-sync. `trim=start_frame:end_frame` gives the exact source frame count. This can save tons of time, and if you catch it only after the whole video is rendered, you will be really pissed off. :) 
 
 ![Original vs remaster, face](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/before_after_face.png)
 
+## By the numbers: a 5-second proving ground
+
+Here's the thing — I didn't discover any of the above on the full 3.5-minute intro. **Every decision was made on a single 5-second clip**, looped through the pipeline over and over on the iGPU. Source choice, 3B vs 7B, fp8 vs Q4 vs fp16, batch 5 → 25 → 49 → 73, tiling on/off, `latent_noise` 0 → 0.1 → 0.15, plus the deflicker and RIFE dead ends — roughly **a dozen full SeedVR2 runs** on that one clip (two of which OOM'd and had to be killed), adding up to **~16 hours of iGPU compute just to dial in the recipe**.
+
+Out of all that came **~15 side-by-side comparison reels** — and the genuinely fun part was watching the same five seconds run 2, 3, even 4 ways at once:
+
+![A few of the comparison reels](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/comparison_reels.png)
+
+Iterating on a short clip first is the whole trick: cheap enough to be patient, long enough to judge temporal behavior. Only once those 5 seconds looked right did I commit a single minute to the full render.
+
 ## Hardware reality: iGPU days vs cloud hours
 
-On the 890M iGPU the full run extrapolated to **~74 hours** (~40 s/frame). So I rented an **RTX PRO 6000
-(Blackwell, 96 GB)** on vast.ai for ~$1.1/hour:
+On the 890M iGPU the full run extrapolated to **~74 hours** (~40 s/frame). So I rented an **RTX PRO 6000 (Blackwell, 96 GB)** on vast.ai for ~$1.1/hour:
 
 - Blackwell (sm_120) needs **CUDA 12.8** torch (PyTorch 2.12 / cuDNN 9.2).
 - Encode dropped from ~12 **minutes**/batch to ~**28 seconds**/batch. With 96 GB: no tiling, whole-shot
