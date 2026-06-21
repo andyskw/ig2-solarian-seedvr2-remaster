@@ -9,7 +9,7 @@ I spent way too long remastering the intro of *Imperium Galactica 2 – Solarian
 
 Everything (code + the generic pipeline) is here: **https://github.com/andyskw/ig2-solarian-seedvr2-remaster**
 
-▶ **Watch the full remaster:** [English](https://youtu.be/zn15PEU9nGY) · [Hungarian dub](https://www.youtube.com/watch?v=gDFm5QmpbvQ)
+▶ **Watch the full remaster:** [English](https://youtu.be/zn15PEU9nGY) · [Hungarian dub](https://www.youtube.com/watch?v=gDFm5QmpbvQ) · [side-by-side 50/50 comparison](https://www.youtube.com/watch?v=7zh0KB110sE)
 
 https://youtu.be/zn15PEU9nGY
 
@@ -105,6 +105,10 @@ A few cloud gotchas that ate my time: `pkill -f inference_cli.py` matched its ow
 Here's what that full render buys you on a wide shot — the same 50/50 split, remaster on the left:
 
 ![Remaster vs original, landscape (50/50 split)](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/split50_1m57.png)
+
+Prefer to scrub through it yourself? Here's the full 50/50 split, start to finish:
+
+https://www.youtube.com/watch?v=7zh0KB110sE
 
 ## Finishing + a YouTube tip
 
