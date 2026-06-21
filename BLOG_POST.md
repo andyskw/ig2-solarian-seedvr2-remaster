@@ -1,6 +1,6 @@
 ---
 title: "I AI-remastered a 25-year-old game intro to real 1080p — and learned that the source matters more than the model"
-published: false
+published: true
 tags: ai, machinelearning, video, opensource
 cover_image: https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/split50_ship_1m29.png
 ---
@@ -8,6 +8,10 @@ cover_image: https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-rema
 I spent way too long remastering the intro of *Imperium Galactica 2 – Solarian*, a space-strategy game from 2000, to a clean 1080p using AI. Along the way I learned a pile of things the hard way — about SeedVR2, about temporal flicker, about running diffusion on a tiny AMD iGPU, and about how little the "big model" actually matters. This is the whole journey, dead ends included, so you don't have to repeat my mistakes.
 
 Everything (code + the generic pipeline) is here: **https://github.com/andyskw/ig2-solarian-seedvr2-remaster**
+
+▶ **Watch the full remaster:** [English](https://youtu.be/zn15PEU9nGY) · [Hungarian dub](https://www.youtube.com/watch?v=gDFm5QmpbvQ)
+
+https://youtu.be/zn15PEU9nGY
 
 ![Original vs remaster, ship detail](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/before_after_crop.png)
 
