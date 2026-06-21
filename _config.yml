@@ -1,0 +1,3 @@
+title: Shot-aware SeedVR2 video remaster
+description: A per-shot AI video remaster pipeline (SeedVR2) + a real-world writeup — source > model, AMD iGPU & cloud, frame-exact per-shot tuning.
+theme: jekyll-theme-cayman
