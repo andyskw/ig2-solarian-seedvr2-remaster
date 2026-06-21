@@ -2,14 +2,10 @@
 title: "I AI-remastered a 25-year-old game intro to real 1080p — and learned that the source matters more than the model"
 published: false
 tags: ai, machinelearning, video, opensource
-cover_image: https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/before_after_crop.png
+cover_image: https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/split50_ship_1m29.png
 ---
 
-I spent way too long remastering the intro of *Imperium Galactica 2 – Solarian*, a space-strategy game
-from 2000, to a clean 1080p using AI. Along the way I learned a pile of things the hard way — about
-SeedVR2, about temporal flicker, about running diffusion on a tiny AMD iGPU, and about how little the
-"big model" actually matters. This is the whole journey, dead ends included, so you don't have to repeat
-my mistakes.
+I spent way too long remastering the intro of *Imperium Galactica 2 – Solarian*, a space-strategy game from 2000, to a clean 1080p using AI. Along the way I learned a pile of things the hard way — about SeedVR2, about temporal flicker, about running diffusion on a tiny AMD iGPU, and about how little the "big model" actually matters. This is the whole journey, dead ends included, so you don't have to repeat my mistakes.
 
 Everything (code + the generic pipeline) is here: **https://github.com/andyskw/ig2-solarian-seedvr2-remaster**
 
@@ -17,18 +13,14 @@ Everything (code + the generic pipeline) is here: **https://github.com/andyskw/i
 
 ## Lesson 0: the source matters more than the upscaler
 
-I had two copies of the same intro: a 360p one (the language dub I wanted) and a 1080p one (a different
-dub). The 1080p "looked the same" at a glance — but it isn't. A quick sharpness measurement (Laplacian
-variance) plus zoomed crops showed it carries genuinely more detail (8.7× the bitrate).
+I had two copies of the same intro: a 360p one (the language dub I wanted) and a 1080p one (a different dub). The 1080p "looked the same" at a glance — but it isn't. A quick sharpness measurement (Laplacian variance) plus zoomed crops showed it carries genuinely more detail (8.7× the bitrate).
 
-So the single biggest quality jump came from **throwing away my preferred 360p source, upscaling the
-better 1080p one, and muxing the audio I wanted back at the very end.** Picture and audio are separable.
+So the single biggest quality jump came from **throwing away my preferred 360p source, upscaling the better 1080p one, and muxing the audio I wanted back at the very end.** Picture and audio are separable.
 If you take one thing from this post: **feed your upscaler the best source you can find.**
 
 ## Getting AI to run on a tiny AMD iGPU
 
-My always-on box has an AMD **Radeon 890M iGPU (gfx1150)** — no ROCm userspace installed, just the
-kernel driver. It still works, with two non-obvious tricks:
+My always-on box has an AMD **Radeon 890M iGPU (gfx1150)** — no ROCm userspace installed, just the kernel driver. It still works, with two non-obvious tricks:
 
 ```bash
 # self-contained ROCm wheel — no system ROCm needed
@@ -37,28 +29,22 @@ export HSA_OVERRIDE_GFX_VERSION=11.5.1   # 11.0.0 -> hipErrorInvalidImage; unset
 export MIOPEN_FIND_MODE=2                 # else MIOpen hangs FOREVER on the first VAE conv
 ```
 
-That MIOpen hang cost me ~27 minutes of staring at a GPU pinned at 100% with zero progress before I
-figured out the FAST find-mode. If you run SeedVR2 (or anything MIOpen-heavy) on a Strix-class iGPU,
-remember those two lines. :D
+That MIOpen hang cost me ~27 minutes of staring at a GPU pinned at 100% with zero progress before I figured out the FAST find-mode. If you run SeedVR2 (or anything MIOpen-heavy) on a Strix-class iGPU, remember those two lines. :D
 
 ## SeedVR2, and why the model size barely matters
 
-[SeedVR2](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) gave the most natural result (real
-surface texture, temporal awareness). I compared 3B vs 7B and... they took almost the same time. Why?
-**The fp16 VAE decode is the bottleneck**, not the diffusion transformer. Quantizing or shrinking the
-DiT changes runtime by a rounding error. The 3B-FP8 looked to me more natural, so that's what I used.
+[SeedVR2](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) gave the most natural result (real surface texture, temporal awareness). I compared 3B vs 7B and... they took almost the same time. Why?
+
+**The fp16 VAE decode is the bottleneck**, not the diffusion transformer. Quantizing or shrinking the DiT changes runtime by a rounding error. The 3B-FP8 looked to me more natural, so that's what I used.
 
 ## The flicker hunt: it's `latent_noise`, not `batch_size`
 
 The intro contains a lot of space fight scenes.
 
-Small, fast-moving objects (a little fighter, drifting shadows) flickered — the model re-invents their
-detail every frame (however, after carefully watching, the original scenes also had a similar flickering -> upscaling only made them more visible). The intuitive fix is a bigger temporal batch... and it helps, then **plateaus**.
+Small, fast-moving objects (a little fighter, drifting shadows) flickered — the model re-invents their detail every frame (however, after carefully watching, the original scenes also had a similar flickering -> upscaling only made them more visible). The intuitive fix is a bigger temporal batch... and it helps, then **plateaus**.
 
-The thing that actually worked was **`latent_noise_scale`**: low on faces (to keep detail), higher on
-fast motion (to suppress the per-frame re-hallucination). Things that did **not** work: a temporal
-deflicker filter (not motion-compensated) and RIFE frame interpolation (smooth, but the flicker is baked
-into the generated frames — and 60 fps made me slightly motion-sick).
+The thing that actually worked was **`latent_noise_scale`**: low on faces (to keep detail), higher on fast motion (to suppress the per-frame re-hallucination). Things that did **not** work: a temporal
+deflicker filter (not motion-compensated) and RIFE frame interpolation (smooth, but the flicker is baked into the generated frames — and 60 fps made me slightly motion-sick).
 
 Here's the worst offender — the little fighter in the opening space battle (**~0:58** in the video).
 Left = original, right = remaster:
@@ -76,8 +62,7 @@ getting the cut list was the real fight:
 - ffmpeg's scene filter missed cuts between visually-similar space shots and over-segmented explosions.
   A "72-second shot" was actually ~5 shots.
 - PySceneDetect's AdaptiveDetector, calibrated against a few hand-marked cuts, did much better.
-- The opening "cut" was a **1-second cross-dissolve** — invisible to content detectors; only my eye
-  caught it.
+- The opening "cut" was a **1-second cross-dissolve** — invisible to content detectors; only my eye caught it.
 
 The workflow that worked: auto-detect → render a **contact sheet** (one thumbnail per shot) → verify and hand-edit. Treat automatic scene detection as a "draft".
 
@@ -111,15 +96,15 @@ On the 890M iGPU the full run extrapolated to **~74 hours** (~40 s/frame). So I 
   batches.
 - **The whole 3.5-minute intro: 2h 21m, about $2.70.**
 
-A few cloud gotchas that ate my time: `pkill -f inference_cli.py` matched its own command line and killed
-my shell; moving "just the home folder" to a new box left the Python deps behind; and the rented box's
-stale CA bundle made `curl` reject valid certs (`certificate has expired`).
+A few cloud gotchas that ate my time: `pkill -f inference_cli.py` matched its own command line and killed my shell; moving "just the home folder" to a new box left the Python deps behind; and the rented box's stale CA bundle made `curl` reject valid certs (`certificate has expired`).
+
+Here's what that full render buys you on a wide shot — the same 50/50 split, remaster on the left:
+
+![Remaster vs original, landscape (50/50 split)](https://raw.githubusercontent.com/andyskw/ig2-solarian-seedvr2-remaster/main/docs/split50_1m57.png)
 
 ## Finishing + a YouTube tip
 
-Mux the audio onto the silent master (`-c:v copy`); the frame-exact split keeps it in sync. And when you
-upload: **upscale to 4K first.** YouTube assigns bitrate by resolution tier, so a 4K upload preserves
-your 1080p content far better through its re-encode than a native 1080p upload.
+Mux the audio onto the silent master (`-c:v copy`); the frame-exact split keeps it in sync. And when you upload, **upscale to 4K first.** YouTube assigns bitrate by resolution tier, so a 4K upload preserves your 1080p content far better through its re-encode than a native 1080p upload.
 
 ## The recipe (use the repo)
 
@@ -129,10 +114,8 @@ your 1080p content far better through its re-encode than a native 1080p upload.
 4. Low-VRAM? `--vae_decode_tiled`. Big cloud GPU? whole-shot batches.
 5. Concat → mux audio → upload at 4K.
 
-The generic, resume-safe pipeline (CUDA **and** AMD ROCm), the shot detector, and the full writeup are
-all here:
+The generic, resume-safe pipeline (CUDA **and** AMD ROCm), the shot detector, and the full writeup are all here:
 
 👉 **https://github.com/andyskw/ig2-solarian-seedvr2-remaster**
 
-Credits: [SeedVR2](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) (ByteDance Seed · NumZ ·
-AInVFX), [PySceneDetect](https://www.scenedetect.com/).
+Credits: [SeedVR2](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) (ByteDance Seed · NumZ · AInVFX), [PySceneDetect](https://www.scenedetect.com/).
